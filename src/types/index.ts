@@ -1,4 +1,5 @@
 type Status = "init" | "running" | "completed";
+type PopupType = "correct" | "wrong" | "";
 
 export interface ConfigurationState {
     numOfSlices: number;
@@ -9,6 +10,8 @@ export interface ConfigurationState {
     color: string;
     status: Status;
     userInput: string;
+    popupText: string;
+    popupType: PopupType;
 }
 
 export interface Action {
@@ -18,10 +21,9 @@ export interface Action {
 
 export const ConfActionTypes = {
     SET_DATA: "SET_DATA",
-    SET_SLICES_QUANTITY: "SET_SLICES_QUANTITY",
     INCREMENT_LEVEL: "INCREMENT_LEVEL",
+    RESET_LEVEL: "RESET_LEVEL",
     INCREMENT_COUNTER: "INCREMENT_COUNTER",
     RESET_COUNTER: "RESET_COUNTER",
-    SET_INTERVAL_ID: "SET_INTERVAL_ID",
     SET_USER_INPUT: "SET_USER_INPUT",
 };

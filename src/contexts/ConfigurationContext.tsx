@@ -17,6 +17,8 @@ const initialState: ConfigurationContextType = {
         sequence: [],
         status: "init",
         userInput: "",
+        popupText: "",
+        popupType: "",
     },
     dispatch: () => undefined
 };

@@ -1,13 +1,15 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Circle from './components/Circle/Circle';
 import InfoPanel from './components/InfoPanel/InfoPanel';
+import Popup from './components/Popup/Popup';
+import { CorrectSequenceMessage, WrongSequenceMessage } from './constants';
 import { useConfigurationContext } from './contexts/ConfigurationContext';
 import { ConfActionTypes } from './types';
 import { generateSequence, matchSequences } from './utils';
 
 const App: React.FC = () => {
 	const { state, dispatch } = useConfigurationContext();
-	const numOfSlices = 8;
+	const [showPopup, setShowPopup] = useState(false);
 
 	// Starts the interval
 	const startSequence = useCallback(() => {
@@ -27,6 +29,12 @@ const App: React.FC = () => {
 	}, [dispatch]);
 	// --------------------------------------------------------
 
+	// Show/hide popup
+	const togglePopup = useCallback(() => {
+		setShowPopup(!showPopup);
+	}, [showPopup]);
+	// --------------------------------------------------------
+
 	// User input change event handler
 	const onFormSubmit = useCallback(() => {
 		const userSequence: string[] = state.userInput.split(",");
@@ -37,34 +45,50 @@ const App: React.FC = () => {
 			const result = matchSequences(state.sequence, userSequence);
 
 			if (result) {
-				alert("Congratulations! You entered the correct sequence");
+				dispatch({ type: ConfActionTypes.SET_DATA, payload: { popupText: CorrectSequenceMessage, popupType: "correct" } });
+				togglePopup();
 			} else {
-				alert("Try again");
+				dispatch({ type: ConfActionTypes.SET_DATA, payload: { popupText: WrongSequenceMessage, popupType: "wrong" } });
+				togglePopup();
 			}
 		}
-	}, [state.userInput, state.numOfSlices, state.sequence]);
+	}, [state.userInput, state.numOfSlices, state.sequence, dispatch, togglePopup]);
+	// --------------------------------------------------------
+
+	// Reset levels
+	const onResetLevelsClick = useCallback(() => {
+		dispatch({ type: ConfActionTypes.RESET_LEVEL });
+		togglePopup();
+	}, [dispatch, togglePopup]);
+	// --------------------------------------------------------
+
+	// Continue
+	const onContinueClick = useCallback(() => {
+		dispatch({ type: ConfActionTypes.INCREMENT_LEVEL });
+		togglePopup();
+	}, [dispatch, togglePopup]);
 	// --------------------------------------------------------
 
 	// Called on mount
 	useEffect(() => {
 		// Sets default values
-		dispatch({
-			type: ConfActionTypes.SET_DATA,
-			payload: {
-				numOfSlices: numOfSlices,
-				slicePercentage: 1 / numOfSlices,
-				counter: 0,
-				intervalId: -1,
-				color: "red",
-				sequence: [],
-				status: "init"
-			}
-		})
+		dispatch({ type: ConfActionTypes.RESET_LEVEL });
 	}, [dispatch]);
 	// --------------------------------------------------------
 
 	return (
 		<React.Fragment>
+			{
+				showPopup &&
+				(
+					<Popup
+						resetLevels={onResetLevelsClick}
+						tryAgain={togglePopup}
+						onClickContinue={onContinueClick}
+					/>
+				)
+			}
+
 			<Circle />
 
 			<InfoPanel

@@ -14,8 +14,8 @@ export const generateSequence = (numSlices: number): string[] => {
     for (let i = 0; i < numSlices;) {
         const randNum: number = Math.floor(Math.random() * numSlices);
 
-        if (sequence.indexOf(`${randNum}`) === -1) {
-            sequence.push(`${randNum}`);
+        if (sequence.indexOf(`${randNum + 1}`) === -1) {
+            sequence.push(`${randNum + 1}`);
             i++;
         }
     }
@@ -54,7 +54,7 @@ export const generateSlices = (numOfSlices: number, slicePercentage: number, int
 
         const pathData: string = `M ${startX} ${startY} A 1 1 0 ${largeArcFlag} 1 ${endX} ${endY} L 0 0`;
 
-        const fillColor: string = (intervalId !== -1 && sequence[counter] === `${i}`) ? color : "transparent";
+        const fillColor: string = (intervalId !== -1 && sequence[counter] === `${i + 1}`) ? color : "transparent";
 
         // Create slices and text
         paths.push(<Path d={pathData} fill={fillColor} key={i} id={`slice${i}`} />);
